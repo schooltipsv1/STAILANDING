@@ -66,7 +66,6 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* Custom Scrollbar for Chat */
         .chat-scroll::-webkit-scrollbar { width: 4px; }
         .chat-scroll::-webkit-scrollbar-track { background: transparent; }
         .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -91,7 +90,8 @@
             <a href="#demo" class="hover:text-white transition-colors">Live Demo</a>
             <a href="#snippets" class="hover:text-white transition-colors">Architecture</a>
         </div>
-        <button onclick="window.location.href='#install'" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105">Get Started</button>
+        <!-- PASTE DOWNLOAD LINK BELOW (Replacing #) -->
+        <a href="#" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105">Install Now</a>
     </nav>
 
     <!-- Hero Section -->
@@ -109,7 +109,8 @@
             
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a href="#demo" class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20">Try STAI Live</a>
-                <a href="#install" class="px-8 py-4 glass border-white/10 hover:bg-white/5 rounded-2xl font-bold transition-all">Install UserScript</a>
+                <!-- PASTE DOWNLOAD LINK BELOW (Replacing #) -->
+                <a href="https://github.com/schooltipsv1/STAI/raw/refs/heads/main/stai.user.js" class="px-8 py-4 glass border-white/10 hover:bg-white/5 rounded-2xl font-bold transition-all">Download UserScript</a>
             </div>
         </div>
 
@@ -153,9 +154,7 @@
                 <p class="text-slate-400">Interact with the actual intelligence powering the tool below.</p>
             </div>
 
-            <!-- CHAT INTERFACE -->
             <div class="glass overflow-hidden flex flex-col h-[500px] border-indigo-500/30 reveal shadow-2xl shadow-indigo-500/10">
-                <!-- Chat Header -->
                 <div class="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs">ST</div>
@@ -170,7 +169,6 @@
                     <div class="text-[10px] font-mono text-slate-500">Puter.ai Engine</div>
                 </div>
 
-                <!-- Messages Area -->
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 chat-scroll flex flex-col">
                     <div class="p-4 rounded-2xl bg-white/5 border border-white/10 self-start max-w-[85%] text-sm">
                         <span class="text-[9px] font-bold text-indigo-400 block mb-1">STAI</span>
@@ -178,7 +176,6 @@
                     </div>
                 </div>
 
-                <!-- Chat Input -->
                 <div class="p-4 bg-black/40 border-t border-white/5">
                     <form id="chat-form" class="flex gap-2">
                         <input 
@@ -246,12 +243,13 @@
         </div>
     </section>
 
-    <!-- CTA -->
+    <!-- CTA Section -->
     <section id="install" class="py-32 px-6 text-center">
         <div class="max-w-3xl mx-auto glass p-12 reveal">
             <h2 class="text-4xl font-black mb-4">Ready to upgrade?</h2>
             <p class="text-slate-400 mb-10">Experience the most advanced AI companion ever built for the browser.</p>
-            <button class="px-10 py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-2xl shadow-indigo-500/20 transition-all hover:scale-105">Copy Script Source</button>
+            <!-- PASTE DOWNLOAD LINK BELOW (Replacing #) -->
+            <a href="#" class="inline-block px-10 py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-2xl shadow-indigo-500/20 transition-all hover:scale-105">Get STAI Pro Ultra</a>
         </div>
     </section>
 
@@ -260,7 +258,6 @@
     </footer>
 
     <script>
-        // --- THREE.JS BACKGROUND ---
         let scene, camera, renderer, particles;
         const count = 1500;
 
@@ -322,7 +319,6 @@
             renderer.render(scene, camera);
         }
 
-        // --- CHAT SYSTEM ---
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
         const chatMessages = document.getElementById('chat-messages');
@@ -349,7 +345,6 @@
             addMessage('User', msg, false);
             chatInput.value = '';
             
-            // Create loading state
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'text-xs text-slate-500 animate-pulse p-2';
             loadingDiv.textContent = 'STAI is processing...';
@@ -357,16 +352,14 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                // Using Puter AI
-                const response = await puter.ai.chat(`You are STAI, a cinematic, high-tech AI companion. Be helpful and professional. User says: ${msg}`);
+                const response = await puter.ai.chat(`You are STAI, a cinematic AI companion. Use technical but friendly language. User: ${msg}`);
                 loadingDiv.remove();
                 addMessage('STAI', response, true);
             } catch (err) {
-                loadingDiv.textContent = 'Connection Error. Neural link failed.';
+                loadingDiv.textContent = 'Neural link offline.';
             }
         };
 
-        // --- SCROLL REVEAL ---
         function initScrollReveal() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -381,11 +374,13 @@
             initScrollReveal();
         };
 
-        // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
             });
         });
     </script>
