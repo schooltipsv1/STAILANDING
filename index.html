@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAI Pro Ultra | The Cinematic AI Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stai-primary: #6366f1;
+            --stai-bg: #0d0d11;
+        }
+
+        body {
+            background-color: var(--stai-bg);
+            font-family: 'Inter', sans-serif;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(13, 13, 17, 0.7);
+            backdrop-filter: blur(18px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, rgba(13, 13, 17, 0) 70%);
+        }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: #050507;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Custom Scrollbar for Chat */
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0d0d11; }
+        ::-webkit-scrollbar-thumb { background: #1e1e26; border-radius: 10px; }
+    </style>
+</head>
+<body class="selection:bg-indigo-500/30">
+
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-transparent backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">ST</div>
+            <span class="font-extrabold text-xl tracking-tight">STAI <span class="text-indigo-400">PRO</span></span>
+        </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400">
+            <a href="#features" class="hover:text-white transition-colors">Features</a>
+            <a href="#demo" class="hover:text-white transition-colors">Live Demo</a>
+            <a href="#snippets" class="hover:text-white transition-colors">Architecture</a>
+        </div>
+        <button onclick="window.location.href='#install'" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105">Get Started</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 hero-gradient">
+        <div class="text-center max-w-4xl z-10 reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold mb-6 tracking-widest uppercase">
+                Now in Build v6.0.4
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none">
+                The AI Companion <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400">Reimagined.</span>
+            </h1>
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                A massive, feature-rich companion injected directly into your browsing experience. Modular design and persistent neural memory.
+            </p>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#demo" class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20">Try STAI Live</a>
+                <a href="#install" class="px-8 py-4 glass border-white/10 hover:bg-white/5 rounded-2xl font-bold transition-all">Install UserScript</a>
+            </div>
+        </div>
+
+        <div class="mt-20 w-full max-w-5xl px-4 float reveal" style="transition-delay: 200ms;">
+            <div class="glass p-4 md:p-8 border-indigo-500/20">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-amber-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-emerald-500/50"></div>
+                    <div class="ml-4 h-6 px-3 rounded-lg bg-white/5 flex items-center text-[10px] font-mono text-slate-500 uppercase tracking-widest">STAI_PREVIEW_MODE</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4">
+                        <h2 class="text-3xl font-bold italic tracking-tight">Persistence in every tab.</h2>
+                        <p class="text-slate-400 text-sm">STAI isn't just a chat bot; it's a productivity layer. From the Task Board to the custom UI, it stays synchronized with your workflow.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                        <div class="flex items-center justify-between text-xs text-slate-500 font-bold uppercase">
+                            <span>Neural Load</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full w-[92%] bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="h-12 rounded-lg bg-indigo-500/20 border border-indigo-500/40"></div>
+                            <div class="h-12 rounded-lg bg-white/5 border border-white/10"></div>
+                            <div class="h-12 rounded-lg bg-white/5 border border-white/10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE DEMO CHAT SECTION -->
+    <section id="demo" class="py-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-4xl font-black mb-4 italic uppercase">Meet STAI</h2>
+                <p class="text-slate-400">Interact with the actual intelligence powering the tool below.</p>
+            </div>
+
+            <!-- CHAT INTERFACE -->
+            <div class="glass overflow-hidden flex flex-col h-[500px] border-indigo-500/30 reveal shadow-2xl shadow-indigo-500/10">
+                <!-- Chat Header -->
+                <div class="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xs">ST</div>
+                        <div>
+                            <div class="text-xs font-bold leading-none">STAI V6.0.4</div>
+                            <div class="text-[10px] text-emerald-500 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                NEURAL LINK ACTIVE
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] font-mono text-slate-500">Puter.ai Engine</div>
+                </div>
+
+                <!-- Messages Area -->
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 chat-scroll flex flex-col">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 self-start max-w-[85%] text-sm">
+                        <span class="text-[9px] font-bold text-indigo-400 block mb-1">STAI</span>
+                        Greetings. I am STAI, your cinematic AI companion. How can I assist your workflow today?
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="p-4 bg-black/40 border-t border-white/5">
+                    <form id="chat-form" class="flex gap-2">
+                        <input 
+                            type="text" 
+                            id="chat-input"
+                            placeholder="Type a message to STAI..." 
+                            class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-colors"
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-6 rounded-xl transition-all flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-8 glass hover:border-indigo-500/40 transition-all group reveal">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-white">Modular Architecture</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Built on a robust StateManager and UIController pattern. Easily extend the AI logic.</p>
+            </div>
+
+            <div class="p-8 glass hover:border-indigo-500/40 transition-all group reveal" style="transition-delay: 100ms;">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-white">Neural Task Board</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Integrated task management that persists across browsing sessions. Tab-independent logic.</p>
+            </div>
+
+            <div class="p-8 glass hover:border-indigo-500/40 transition-all group reveal" style="transition-delay: 200ms;">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-white">Real-time Memory</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Configured through Puter.js state, ensuring every interaction is grounded in context.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Snippets -->
+    <section id="snippets" class="py-24">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="mb-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center reveal">
+                <div>
+                    <h4 class="text-2xl font-bold mb-4 text-indigo-400">State Management</h4>
+                    <p class="text-slate-400 text-sm mb-6 leading-relaxed">The <code>StateManager</code> class handles syncing your preferences to <code>localStorage</code>.</p>
+                </div>
+                <div class="code-block p-6 text-[12px] leading-relaxed overflow-x-auto">
+<pre class="text-indigo-300">class StateManager {
+  loadConfig() {
+    const saved = localStorage.getItem('stai_config');
+    return saved ? JSON.parse(saved) : defaults;
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="install" class="py-32 px-6 text-center">
+        <div class="max-w-3xl mx-auto glass p-12 reveal">
+            <h2 class="text-4xl font-black mb-4">Ready to upgrade?</h2>
+            <p class="text-slate-400 mb-10">Experience the most advanced AI companion ever built for the browser.</p>
+            <button class="px-10 py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-2xl shadow-indigo-500/20 transition-all hover:scale-105">Copy Script Source</button>
+        </div>
+    </section>
+
+    <footer class="py-12 text-center text-slate-600 text-xs border-t border-white/5">
+        <p>© 2024 STAI SYSTEMS UNIFIED. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <script>
+        // --- THREE.JS BACKGROUND ---
+        let scene, camera, renderer, particles;
+        const count = 1500;
+
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+
+            for(let i = 0; i < count * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 15;
+                colors[i] = Math.random();
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        let mouseX = 0, mouseY = 0;
+        function onMouseMove(event) {
+            mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.0008;
+            particles.rotation.x += 0.0004;
+            particles.position.x += (mouseX * 0.3 - particles.position.x) * 0.05;
+            particles.position.y += (-mouseY * 0.3 - particles.position.y) * 0.05;
+            renderer.render(scene, camera);
+        }
+
+        // --- CHAT SYSTEM ---
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        function addMessage(sender, text, isAi = false) {
+            const div = document.createElement('div');
+            div.className = `p-4 rounded-2xl text-sm transition-all animate-in fade-in slide-in-from-bottom-2 ${isAi ? 'bg-white/5 border border-white/10 self-start' : 'bg-indigo-600 self-end'} max-w-[85%]`;
+            
+            if (isAi) {
+                div.innerHTML = `<span class="text-[9px] font-bold text-indigo-400 block mb-1">STAI</span>${text}`;
+            } else {
+                div.textContent = text;
+            }
+            
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+
+            addMessage('User', msg, false);
+            chatInput.value = '';
+            
+            // Create loading state
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'text-xs text-slate-500 animate-pulse p-2';
+            loadingDiv.textContent = 'STAI is processing...';
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                // Using Puter AI
+                const response = await puter.ai.chat(`You are STAI, a cinematic, high-tech AI companion. Be helpful and professional. User says: ${msg}`);
+                loadingDiv.remove();
+                addMessage('STAI', response, true);
+            } catch (err) {
+                loadingDiv.textContent = 'Connection Error. Neural link failed.';
+            }
+        };
+
+        // --- SCROLL REVEAL ---
+        function initScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('active');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        window.onload = () => {
+            init3D();
+            initScrollReveal();
+        };
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
